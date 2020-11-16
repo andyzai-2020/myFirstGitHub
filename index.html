@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            margin: 0;
+            padding: 0;
+        }
+        canvas{
+            padding: 0;
+            margin: 0;
+            background-color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <canvas>can not support</canvas>
+</body>
+<script>
+    var canvas = document.querySelector("canvas");
+    canvas.width = 600;
+    canvas.height = 500;
+    var ctx = canvas.getContext("2d");
+    var point = {
+        x:50,
+        y:100,
+        r:50,
+        s:0,
+        e:360,
+        color:"red"
+    }
+
+    var drawArc = function (point) {
+            // .0 处理逻辑
+            ctx.beginPath();
+            ctx.moveTo(point.x,point.y);
+            ctx.arc(
+                point.x,//X坐标
+                point.y,//Y坐标
+                point.r,//半径
+                point.s * Math.PI / 180,//开始弧度
+                point.e * Math.PI / 180,//结束弧度
+                false
+            );
+            ctx.fillStyle = point.color || "#ccc";
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        drawArc(point);
+
+        // 控制球的方向
+        var spendX = 4;
+        var spendY = 2;
+        
+        var animate = function(){
+            ctx.clearRect(0,0,canvas.width,canvas.height)
+            point.x +=spendX;
+            point.y +=spendY;
+            // 碰撞原理，如果小球碰壁了，那么相应的X或者Y方向的speed取反
+            if (point.y>canvas.height - point.r) {
+                point.y = canvas.height - point.r;
+                spendY = -spendY;
+            }
+            if (point.x>canvas.width - point.r) {
+                point.x = canvas.width - point.r;
+                spendX = -spendX;
+            }
+            if (point.x <= point.r) {
+                point.x = point.r;
+                spendX = -spendX;
+            }
+            if (point.y <= point.r) {
+                point.y = point.r;
+                spendY = -spendY;
+            }
+
+            drawArc(point);
+            window.requestAnimationFrame(animate);
+        }
+        animate();
+        var changeCAS = setInterval(function(){
+            var sizeR = Math.floor(Math.random()*61+20);
+            point.r = sizeR;
+            var bgColor =  "#" + ranColor() + ranColor() + ranColor();
+            point.color = bgColor;
+        },5000)
+        function ranColor (){
+            var num = Math.floor(Math.random()*256);
+            num = num.toString(16);
+            if (num.length == 1) {
+                num = "0" + num ;
+            }
+            return num;
+        }
+</script>
+</html>
